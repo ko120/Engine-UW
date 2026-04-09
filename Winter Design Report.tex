@@ -1,0 +1,652 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{fontenc}
+\usepackage{inputenc}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{AI Video Analytics -- Winter Quarter End Report}
+\lhead{AIWaysion / UW ECE}
+\cfoot{\thepage}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{}{0em}{}
+
+\renewcommand{\arraystretch}{1.3}
+
+\begin{document}
+
+%─────────────────────────────────────────────────────────────
+%  TITLE
+%─────────────────────────────────────────────────────────────
+\begin{center}
+    {\LARGE\bfseries AI Video Analytics -- Winter Quarter End Report}\\[1em]
+    \textit{Team Members:} Andy Cao, Brian Ko, Miles Chin, Steven Miao, Wesley Huang\\[0.3em]
+    \textit{Industry Partner:} AIWaysion -- AI Vision group\\[0.3em]
+    \textit{Industry Mentor:} Hung-Min Hsu\\[0.3em]
+    \textit{Faculty Mentor:} Jai Jaisimha\\[0.3em]
+    \textit{Submission Date:} March 19, 2026\\[0.3em]
+    \textit{Institution:} University of Washington, Department of Electrical and Computer Engineering\\[0.3em]
+    \textit{Location:} Seattle, Washington
+\end{center}
+
+\vspace{1em}
+\hrule
+\vspace{1em}
+
+%─────────────────────────────────────────────────────────────
+%  TABLE OF CONTENTS
+%─────────────────────────────────────────────────────────────
+\section*{Table of Contents}
+\begin{enumerate}
+    \item Introduction/Abstract
+    \item Teams, Roles and Responsibilities
+    \item Project Schedule
+    \item Project Success Criteria
+    \item System Requirements
+    \item Hardware/Software Design
+    \item Design Procedure/Methods
+    \item Test Design
+    \item Realistic Constraints / Relevant Engineering Standards
+    \item Project Resources/Budget
+    \item Industry Sponsor Comments
+    \item References
+\end{enumerate}
+
+%─────────────────────────────────────────────────────────────
+%  1. INTRODUCTION / ABSTRACT
+%─────────────────────────────────────────────────────────────
+\section{Introduction/Abstract}
+
+This project addresses persistent safety concerns at the unconventional intersection of \textbf{NW 43rd St and 8th Ave NW in Ballard}, where the \textbf{Burke-Gilman Trail} intersects with local streets. The corridor serves pedestrians, cyclists, and micromobility users, and it experiences recurring conflicts and near-misses with motor vehicles because of unusual intersection geometry, ignored stop signs, and unsigned trail interruptions. The project sponsor needs empirical evidence, risk metrics, and repeatable analytics to support municipal roadway-safety decisions.
+
+Sponsored by \textbf{AIWaysion}, the project objective is to build an \textbf{AI video analytics pipeline} that can automatically detect and track diverse road users, map trajectories into world coordinates, estimate short-horizon future motion, quantify safety metrics, and support engineering recommendations. The planned technical deliverables are:
+\begin{enumerate}
+    \item improved computer-vision models for pedestrians, e-bikes, e-scooters, and vehicles,
+    \item trajectory-based safety metrics such as \textbf{time-to-collision (TTC)}, \textbf{post-encroachment time (PET)}, and yielding compliance,
+    \item conflict heatmaps by time of day and week,
+    \item evidence-based roadway countermeasure recommendations,
+    \item a professional final report,
+    \item a multimodal dataset of trajectories and interactions, and
+    \item a reproducible codebase for the video analytics pipeline.
+\end{enumerate}
+
+The Winter quarter work completed the project through \textbf{Milestone D: Camera Calibration + world-coordinate trajectory mapping}. Specifically, the team completed project setup, data curation and annotation for an initial gold set, an end-to-end baseline computer-vision pipeline, and homography-based camera calibration for mapping image coordinates to the ground plane. Current slide-deck evidence shows completed work on dataset generation, tracking comparison, YOLO26 fine-tuning, and trajectory prediction with homography calibration. The remaining work for Spring quarter centers on safety/conflict analytics, improved micromobility detection and tracking, countermeasure analysis, and the final delivery package.
+
+%─────────────────────────────────────────────────────────────
+%  2. TEAMS, ROLES AND RESPONSIBILITIES
+%─────────────────────────────────────────────────────────────
+\section{Teams, Roles and Responsibilities}
+
+The project team comprises five students: \textbf{Andy Cao, Brian Ko, Miles Chin, Steven Miao, and Wesley Huang}, guided by \textbf{Industry Mentor Hung-Min Hsu} and \textbf{Faculty Mentor Jai Jaisimha}. Mentors from AIWaysion (Dr.\ Hsu and Dr.\ Sun) and the university (Professor Jaisimha) offered technical guidance and project oversight.
+
+\begin{longtable}{|p{2.5cm}|p{3.5cm}|p{8cm}|}
+\hline
+\textbf{Team Member} & \textbf{Role / Responsibilities} & \textbf{Actual Contributions} \\
+\hline
+\endhead
+\textbf{Andy Cao} & Micromobility Team / Model train &
+Andy contributed to the development of the object recognition and labeling pipeline. Performed a comparative analysis of detection results across different models (SAM3/YOLO) and labeling schemas. Also manually annotated to build up the basic datasets. Furthermore, fine-tuned YOLO model specifically on the `easy' dataset, evaluating training outcomes under different hyperparameters to determine the most effective metrics. \\
+\hline
+\textbf{Brian Ko} & Near-miss Team / Experiment Lead &
+Brian contributed to the core technical design of the project by developing the pseudo label generation pipeline, which combined automated detection and tracking outputs with human review to create higher quality training and evaluation data. He also contributed to the trajectory prediction pipeline, including baseline motion forecasting methods and evaluation using trajectory error metrics, and helped design the homography-based calibration pipeline that maps image coordinates into real-world ground plane coordinates for speed estimation and trajectory analysis. \\
+\hline
+\textbf{Miles Chin} & Near-miss Team / Data annotation &
+Labeled the hard set of goldset, implemented the initial version of YOLO inference pipeline, made a tool for creating new cyclist category from YOLO/SAM3 inference results, and implemented Kalman filter for trajectory prediction. \\
+\hline
+\textbf{Steven Miao} & Micromobility Team / Model evaluation &
+Steven contributed to dataset organization, annotation workflow support, and evaluation of detection results for micromobility-related objects. He also helped document project progress, prepare written report content, and support presentation development by organizing technical results and turning implementation details into clear project deliverables. \\
+\hline
+\textbf{Wesley Huang} & Micromobility Team / Model train &
+Wesley contributed to ground truth labeling with the assistance of pseudo labeling tool. Also worked on project construction on CVAT, in addition to the label conversion for its compatibility in YOLO/SAM3 model. Fine-tuned YOLO model for micromobility classes on hard dataset, made evaluation metrics on adjusted hyperparameters to compare performance, and generated demonstration video on refined results. \\
+\hline
+\textbf{Hung-Min Hsu} & Industry Mentor &
+Provided real-world requirements, dataset access, and feedback on algorithms. \\
+\hline
+\end{longtable}
+
+%─────────────────────────────────────────────────────────────
+%  3. PROJECT SCHEDULE
+%─────────────────────────────────────────────────────────────
+\section{Project Schedule}
+
+The project Gantt chart is available at:\\
+\url{https://sharing.clickup.com/9017744387/g/h/8cqzq03-537/141f1d6487ab185}
+
+As of March 20, the project has progressed through \textbf{Milestone D} and is entering the analytics and deployment phase.
+
+\begin{longtable}{|p{2.8cm}|p{3.5cm}|p{1.8cm}|p{1.5cm}|p{3cm}|}
+\hline
+\textbf{Milestone} & \textbf{Tasks} & \textbf{Duration} & \textbf{Status} & \textbf{Notes} \\
+\hline
+\endhead
+\textbf{A. Project setup} &
+\makecell[l]{1. Define MVP. \\ 2. Create shared taxonomy. \\ 3. Establish engineering practice.} &
+2 Weeks \newline (Jan 5--18) & \textbf{Completed} &
+Team has a defined detect $\to$ track $\to$ prediction / calibration pipeline. \\
+\hline
+\textbf{B. Data curation + annotation gold set} &
+\makecell[l]{1. Select representative clips. \\ 2. Build annotation guide. \\ 3. Label gold set. \\ 4. Define baseline metrics.} &
+3 Weeks \newline (Jan 19--Feb 8) & \textbf{Completed} &
+Documented dataset snapshot and pseudo-label workflow. \\
+\hline
+\textbf{C. Baseline CV pipeline} &
+\makecell[l]{1. Ultralytics onboarding. \\ 2. Integrate detector + tracker. \\ 3. Standardize outputs.} &
+3 Weeks \newline (Jan 19--Feb 8) & \textbf{Completed} &
+End-to-end baseline with detection, tracking, and fine-tuning. \\
+\hline
+\textbf{D. Camera calibration + world-coordinate mapping} &
+\makecell[l]{1. Homography calibration. \\ 2. Define lane/crossing geometry. \\ 3. Validate speed estimates.} &
+3 Weeks \newline (Feb 9--Mar 1) & \textbf{Completed} &
+Completed homography calibration and trajectory prediction results. \\
+\hline
+\textbf{Quarterly Demo / Midpoint Review} &
+Consolidate results; prepare demo and presentation. &
+2 Weeks \newline (Mar 2--22) & \textbf{Completed} &
+Presented at Winter Midpoint Presentation. \\
+\hline
+\textbf{E. Safety/conflict analytics} &
+\makecell[l]{1. Implement TTC, PET. \\ 2. Slice analysis by time. \\ 3. Stakeholder visuals.} &
+4 Weeks \newline (Mar 23--Apr 19) & \textbf{In progress / next} &
+Planned; not yet completed. \\
+\hline
+\textbf{F. Improve detection/tracking} &
+\makecell[l]{1. Error analysis. \\ 2. Improve model. \\ 3. Re-run analytics.} &
+3 Weeks \newline (Apr 20--May 10) & \textbf{In progress} &
+Fine-tuning complete for baseline; micromobility improvement pending. \\
+\hline
+\textbf{G. Countermeasures + redesign} &
+\makecell[l]{1. Identify root causes. \\ 2. Literature review. \\ 3. Propose countermeasures.} &
+2 Weeks \newline (May 11--24) & \textbf{Pending} &
+Proceeds as prior stages complete. \\
+\hline
+\textbf{H. Final deliverable package} &
+Final report, poster, presentation, dataset, codebase, hand-off kit. &
+1 Week \newline (May 25--31) & \textbf{Pending} &
+Scheduled for end of project. \\
+\hline
+\end{longtable}
+
+\textbf{Work Breakdown Structure (WBS):}
+\begin{enumerate}
+    \item \textbf{Project setup:} (1) Define MVP. (2) Create shared taxonomy. (3) Estimate compute resources; establish engineering practice.
+    \item \textbf{Dataset and annotation:} (1) Select representative clips. (2) Establish baseline metrics; create annotation pipeline; label gold set through CVAT.
+    \item \textbf{Baseline implementation:} (1) Reproducible detector + tracker producing trajectories and visual outputs. (2) Produce annotated label data with stable tracking IDs.
+    \item \textbf{Calibration and mapping:}
+    \begin{enumerate}
+        \item \textit{Near-miss team:} PnP research, 2D/3D trajectory inference, near-miss evaluation on SAM3 vs YOLO26 on hard set, linear \& Kalman trajectory prediction.
+        \item \textit{Micro-mobility team:} Micro-mobility detection with pose estimation, speed estimation and VLM, YOLO hyperparameter fine-tuning, evaluation on easy and hard sets.
+    \end{enumerate}
+    \item \textbf{Safety analytics:} (1) Implement TTC, PET, near-miss detection, heatmaps. (2) Slice analysis by time of day/week. (3) Stakeholder visuals.
+    \item \textbf{Model improvement:} (1) Error analysis. (2) Augmentation, re-labeling, fine-tuning. (3) Re-run analytics.
+    \item \textbf{Engineering recommendations and final hand-off:} Synthesize countermeasures, finalize documentation, and package dataset and codebase.
+\end{enumerate}
+
+\textit{\textbf{Compared with the earlier version of the report, the schedule can now state clearly that Milestones A--D are complete. Spring quarter work should therefore focus on Milestones E--H, especially conflict analytics, repeatable stakeholder reporting, micromobility refinement, and final delivery artifacts.}}
+
+%─────────────────────────────────────────────────────────────
+%  4. PROJECT SUCCESS CRITERIA
+%─────────────────────────────────────────────────────────────
+\section{Project Success Criteria}
+
+\begin{longtable}{|p{4cm}|p{7cm}|p{2.5cm}|}
+\hline
+\textbf{Criterion} & \textbf{Description} & \textbf{Status} \\
+\hline
+\endhead
+\textbf{1. Establish a minimum viable end-to-end pipeline} &
+Build a reproducible pipeline: detection $\to$ tracking $\to$ trajectory extraction $\to$ calibration/world mapping. & \textbf{Completed} \\
+\hline
+\textbf{2. Create a curated gold-set dataset} &
+Produce representative labeled clips and an evaluation split with annotation QA. & \textbf{Completed} \\
+\hline
+\textbf{3. Quantify baseline detection and tracking performance} &
+Report metrics such as detection mAP, HOTA, gap events, and average track length. & \textbf{Completed} \\
+\hline
+\textbf{4. Improve detection through fine-tuning} &
+Fine-tune YOLO26x. Easy set: mAP50 $0.6558 \to 0.9709$, precision $0.8314 \to 0.9742$, recall $0.8314 \to 0.9329$. Hard set: mAP50 $0.3677 \to 0.8933$, precision $0.4629 \to 0.8923$, recall $0.3503 \to 0.8418$. & \textbf{Completed} \\
+\hline
+\textbf{5. Map trajectories into world coordinates} &
+Camera calibration and homography-based trajectory mapping. & \textbf{Completed} \\
+\hline
+\textbf{6. Quantify safety metrics} &
+Compute TTC, PET, yielding compliance, and near-miss indicators. & \textbf{In progress} \\
+\hline
+\textbf{7. Produce conflict heatmaps} &
+Time-of-day and day-of-week risk summaries and heatmaps. & \textbf{Pending} \\
+\hline
+\textbf{8. Support engineering recommendations} &
+Translate analytics into evidence-based countermeasure proposals. & \textbf{Pending} \\
+\hline
+\textbf{9. Deliver the final package} &
+Final report, dataset, codebase, presentation/poster, and hand-off materials. & \textbf{Pending} \\
+\hline
+\end{longtable}
+
+%─────────────────────────────────────────────────────────────
+%  5. SYSTEM REQUIREMENTS
+%─────────────────────────────────────────────────────────────
+\section{System Requirements}
+
+The system is composed of several subsystems---detection, tracking, prediction, near-miss analysis, micromobility classification, and calibration.
+
+\begin{longtable}{|p{1.2cm}|p{2cm}|p{3cm}|p{3.5cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|}
+\hline
+\textbf{Req. ID} & \textbf{Subsystem} & \textbf{Parameter} & \textbf{Test Conditions} & \textbf{Min} & \textbf{Nom.} & \textbf{Max} \\
+\hline
+\endhead
+SR-2 & Detection & mAP$_{0.5:0.95}$ on Hard & Compare YOLO26x+BoT, SAM3(all), SAM3(sep.) & 0.1314 & 0.1407 & 0.1986 \\
+\hline
+SR-3 & Tracking & HOTA on Hard & Compare YOLO26x+BoT, SAM3(all), SAM3(sep.) & 0.2506 & 0.2682 & 0.3036 \\
+\hline
+SR-4 & Prediction & ADE on Hard & Direct estimate vs homography & 22.175 & 23.656 & 39.658 \\
+\hline
+SR-5 & Prediction & FDE on Hard & Direct estimate vs homography & 53.901 & 56.372 & 70.498 \\
+\hline
+\end{longtable}
+
+\subsection{Hardware Requirements}
+
+\begin{tabular}{|p{1.5cm}|p{5cm}|p{5cm}|}
+\hline
+\textbf{ID} & \textbf{Requirement} & \textbf{Threshold} \\
+\hline
+HR-01 & GPU for training & NVIDIA L4/H100 \\
+\hline
+HR-02 & Edge deployment hardware & Jetson-class GPU \\
+\hline
+HR-03 & Power budget & $\leq$ 30 W \\
+\hline
+HR-04 & Storage capacity & $\geq$ 128 GB \\
+\hline
+\end{tabular}
+
+\subsection{Software Requirements}
+
+\begin{tabular}{|p{1.5cm}|p{10cm}|}
+\hline
+\textbf{ID} & \textbf{Requirement} \\
+\hline
+SR-01 & YOLO26 detection (PyTorch) \\
+\hline
+SR-02 & BoT-SORT tracking with optional SAM3 refinement \\
+\hline
+SR-03 & OpenCV homography calibration \\
+\hline
+SR-04 & CVAT annotation pipeline \\
+\hline
+SR-05 & Python-based TTC/PET analytics \\
+\hline
+\end{tabular}
+
+\subsection{Communication \& Interface Requirements}
+
+\begin{tabular}{|p{1.5cm}|p{10cm}|}
+\hline
+\textbf{ID} & \textbf{Requirement} \\
+\hline
+IR-01 & Accept RTSP/MP4 video input \\
+\hline
+IR-02 & Export trajectories in JSON/CSV \\
+\hline
+IR-03 & Visualization outputs (heatmaps, plots) \\
+\hline
+\end{tabular}
+
+\subsection{Latency Requirements}
+
+\begin{tabular}{|p{1.5cm}|p{6cm}|p{4cm}|}
+\hline
+\textbf{ID} & \textbf{Requirement} & \textbf{Threshold} \\
+\hline
+LR-01 & End-to-end inference latency & $\leq$ 200 ms/frame \\
+\hline
+LR-02 & Prediction latency & $\leq$ 33 ms (30 FPS) \\
+\hline
+\end{tabular}
+
+%─────────────────────────────────────────────────────────────
+%  6. HARDWARE / SOFTWARE DESIGN
+%─────────────────────────────────────────────────────────────
+\section{Hardware/Software Design}
+
+\subsection{Design Rationale}
+
+A structured decision-making process was used to compare YOLO26 + BoT-SORT and SAM3. A Pugh matrix was constructed to evaluate both pipelines across weighted criteria including accuracy, robustness, runtime, and deployability.
+
+\subsubsection{Pugh Matrix (Scored)}
+
+\begin{tabular}{|p{5cm}|r|r|r|}
+\hline
+\textbf{Criterion} & \textbf{Weight} & \textbf{YOLO26+BoT} & \textbf{SAM3} \\
+\hline
+Detection accuracy (Easy) & 5 & +1 & 0 \\
+Detection robustness (Hard) & 5 & +1 & $-1$ \\
+Tracking stability & 4 & +1 & +1 \\
+Runtime speed & 5 & +1 & $-1$ \\
+Edge deployability & 5 & +1 & $-1$ \\
+Mask quality & 3 & 0 & +1 \\
+Track length & 3 & 0 & +1 \\
+Annotation usefulness & 3 & +1 & +1 \\
+Robustness to occlusion & 4 & +1 & $-1$ \\
+\hline
+\end{tabular}
+
+\subsubsection{Weighted Score Calculation}
+
+\begin{itemize}
+    \item \textbf{YOLO26 + BoT-SORT:}\\
+    $5(+1) + 5(+1) + 4(+1) + 5(+1) + 5(+1) + 3(0) + 3(0) + 3(+1) + 4(+1) = \mathbf{31}$
+
+    \item \textbf{SAM3:}\\
+    $5(0) + 5(-1) + 4(+1) + 5(-1) + 5(-1) + 3(+1) + 3(+1) + 3(+1) + 4(-1) = \mathbf{-6}$
+\end{itemize}
+
+\subsection{System Architecture}
+
+The system implements a \textbf{modular video analytics pipeline} for the Ballard Burke-Gilman Trail intersection. The architecture turns raw traffic video into trajectories, calibrated motion estimates, safety metrics, and engineering recommendations.
+
+\textbf{Code repository:} \url{https://github.com/ko120/Engine-Video}
+
+\subsubsection{Design Pipeline}
+
+\begin{enumerate}
+    \item \textbf{Detection:} Per-frame object detection using \textbf{YOLO26} (outputs bounding boxes for car, truck, person, bicycle). \textbf{SAM 3} is evaluated in parallel as a segmentation-based alternative.
+
+    \item \textbf{Tracking:} Detected objects are associated across frames using \textbf{BoT-SORT}. YOLO26 + BoT-SORT is more stable on the Hard dataset; SAM 3 can produce longer tracks on easier cases.
+
+    \item \textbf{Pseudo-label Generation:} YOLO26 + BoT-SORT generates preliminary bounding boxes and track IDs; humans review and correct in \textbf{CVAT}. A parallel workflow evaluates SAM 3-based mask generation.
+
+    \item \textbf{Micromobility Classification:} Fine-grained classification of e-bikes, scooters, wheelchairs, bicycles, and pedestrians to support detailed safety analysis.
+
+    \item \textbf{Trajectory Prediction:} Short-horizon prediction using \textbf{linear extrapolation} and a \textbf{Kalman filter}, evaluated with ADE and FDE in both image and world coordinates.
+
+    \item \textbf{Near-miss Analysis:} Predicted and observed trajectories support \textbf{TTC}, \textbf{PET}, and other near-miss indicators. Planned for next phase.
+
+    \item \textbf{Calibration:} Homography matrix estimated from image--world correspondences converts pixel trajectories to ground-plane coordinates. Fewer but more distinct calibration points produced more stable results.
+
+    \item \textbf{Edge Deployment:} Long-term goal to run detection and tracking on an edge device with a YOLO-based model.
+\end{enumerate}
+
+\subsubsection{UML System Architecture Diagram}
+
+\begin{verbatim}
++----------------+
+| Roadside Cam   |
++-------+--------+
+        |
+        v
++----------------------+
+| ObjectDetector       |  YOLO26 / SAM3
+| + detect(frame)      |  (PyTorch)
++-------+--------------+
+        |
+        v
++----------------------+
+| Tracker              |  BoT-SORT
+| + assign_ids()       |  (OpenCV)
++-------+--------------+
+        |
+        v
++----------------------+
+| Calibrator           |  Homography
+| + pixel_to_world()   |  (OpenCV)
++-------+--------------+
+        |
+        v
++----------------------+
+| Predictor            |  Linear / Kalman
+| + forecast()         |  (NumPy/SciPy)
++-------+--------------+
+        |
+        v
++----------------------+
+| NearMissEngine       |  TTC / PET
+| + compute_risk()     |
++-------+--------------+
+        |
+        v
++----------------------+
+| MicromobilityClass   |  CNN / LightGBM
+| + classify(track)    |
++----------------------+
+\end{verbatim}
+
+%─────────────────────────────────────────────────────────────
+%  CORE EQUATIONS
+%─────────────────────────────────────────────────────────────
+\subsection{Core Equations Used in Implementation}
+
+\subsubsection{YOLO26 Loss Function}
+
+\begin{equation}
+L = \lambda_{\text{box}}\, L_{\text{box}} + \lambda_{\text{obj}}\, L_{\text{obj}} + \lambda_{\text{cls}}\, L_{\text{cls}}
+\end{equation}
+
+\subsubsection{Mean Average Precision (mAP)}
+
+Average Precision for class $c$:
+\begin{equation}
+AP_c = \int_0^1 P(R)\, dR
+\end{equation}
+
+Mean Average Precision across all classes:
+\begin{equation}
+mAP = \frac{1}{C} \sum_{c=1}^{C} AP_c
+\end{equation}
+
+where $P(R)$ is the precision--recall curve and $C$ is the number of classes.
+
+\subsubsection{HOTA (Higher Order Tracking Accuracy)}
+
+\begin{equation}
+HOTA = \frac{1}{|A|} \sum_{a \in A} \sqrt{Det_a \cdot Assoc_a}
+\end{equation}
+
+where $Det_a$ = detection accuracy, $Assoc_a$ = association accuracy, and $A$ = set of thresholds.
+HOTA rewards both \textbf{correct detection} and \textbf{identity consistency}.
+
+\subsubsection{Homography Mapping}
+
+\begin{equation}
+p_{\text{world}} = H \cdot p_{\text{pixel}}
+\end{equation}
+
+where $p_{\text{pixel}} = (u, v, 1)^T$, $H$ is a $3 \times 3$ homography matrix, and $p_{\text{world}} = (X, Y, 1)^T$.
+
+\subsubsection{Trajectory Prediction}
+
+\textit{Linear Extrapolation:}
+\begin{equation}
+x_{t+k} = x_t + k \cdot v_x, \qquad y_{t+k} = y_t + k \cdot v_y
+\end{equation}
+
+\textit{Kalman Filter (State Update):}
+\begin{equation}
+\mathbf{x}_{t+1} = A\, \mathbf{x}_t + B\, \mathbf{u}_t, \qquad \mathbf{x} = [x,\, y,\, v_x,\, v_y]^T
+\end{equation}
+
+\subsubsection{ADE \& FDE (Prediction Metrics)}
+
+Average Displacement Error:
+\begin{equation}
+ADE = \frac{1}{T} \sum_{t=1}^{T} \sqrt{(x_t - \hat{x}_t)^2 + (y_t - \hat{y}_t)^2}
+\end{equation}
+
+Final Displacement Error:
+\begin{equation}
+FDE = \sqrt{(x_T - \hat{x}_T)^2 + (y_T - \hat{y}_T)^2}
+\end{equation}
+
+\subsubsection{Near-Miss Metrics (TTC \& PET)}
+
+Time-to-Collision:
+\begin{equation}
+TTC = \frac{d}{v_{\text{rel}}}
+\end{equation}
+
+where $d$ = distance between two road users and $v_{\text{rel}}$ = relative closing speed.
+
+Post-Encroachment Time:
+\begin{equation}
+PET = t_{\text{exit},A} - t_{\text{enter},B}
+\end{equation}
+
+A near-miss is flagged when $TTC < \text{threshold}$, or $PET < \text{threshold}$, or minimum distance $<$ safety buffer.
+
+%─────────────────────────────────────────────────────────────
+%  7. DESIGN PROCEDURE / METHODS
+%─────────────────────────────────────────────────────────────
+\section{Design Procedure/Methods}
+
+\begin{enumerate}
+    \item \textbf{Dataset creation:} Two 3-minute crossing videos (Easy ID 124441 and Hard ID 084511) were selected. A pseudo-label generation pipeline was built: YOLO26 detector and BoT-SORT tracker generated initial bounding boxes and identities, which were manually corrected using CVAT. An alternative pipeline used SAM 3 prompts to generate segmentation masks and IDs.
+
+    \item \textbf{Model selection:} A Pugh matrix justified the choice between YOLO26 + BoT-SORT and SAM 3. YOLO26 + BoT-SORT has higher mAP and HOTA on the Hard set, whereas SAM 3 (separate prompts) yields longer tracks and fewer gaps on the Easy set.
+
+    \item \textbf{Fine-tuning experiments:} Experiment 2 fine-tuned YOLO26x on each dataset. Hyperparameters explored: learning rate $\in \{0.0005, 0.001, 0.01\}$, image size $\in \{640, 960\}$, patience $= 10$, batch size $\in \{16, 32, 64\}$, max frames $\in \{400, 600, 1000\}$, max frames per class $\in \{100, 150, 250\}$. Training ran 100 epochs on L4/H100 GPUs with base model \texttt{yolo26x.pt}. Results: Easy mAP50 $0.6558 \to 0.9709$, precision $0.8314 \to 0.9742$; Hard mAP50 $0.3677 \to 0.8933$, precision $0.4629 \to 0.8923$.
+
+    \item \textbf{Tracking comparison:} Experiment 1 compared YOLO26 + BoT-SORT to SAM 3 variants on HOTA, mAP, gap events, and average track length. SAM 3 with separate prompts yielded highest HOTA (0.3244) and longest average track length (87.2) on Easy; YOLO26 + BoT-SORT achieved higher HOTA (0.3036) and mAP (0.1986) on Hard with fewer gaps.
+
+    \item \textbf{Trajectory prediction and calibration:} Experiment 3 examined prediction algorithms with and without homography calibration~\cite{kalman,hartley}. Homography mapping lowers ADE/FDE for linear predictions but worsens Kalman results due to numerical instabilities. Selecting six distinct calibration points led to more reliable homography than using eight noisy points.
+
+    \item \textbf{Future work:} Spring quarter directions include near-miss detection, transformer-based trajectory prediction, and edge deployment of YOLO. Micromobility classification and near-miss analysis are planned but not yet executed.
+\end{enumerate}
+
+%─────────────────────────────────────────────────────────────
+%  8. TEST DESIGN
+%─────────────────────────────────────────────────────────────
+\section{Test Design}
+
+\textbf{Detection Testing:} Each dataset is divided into training, validation, and test subsets. Detection performance is evaluated on the held-out test set using mAP$_{0.5:0.95}$, comparing the pretrained vs.\ fine-tuned YOLO26 model.
+
+\textbf{Tracking Testing:} Tracking performance is evaluated using HOTA, gap events, and average track length across YOLO26 + BoT-SORT, SAM 3 (all prompts), and SAM 3 (separate prompts).
+
+\textbf{Micromobility Classification Testing:} A labeled evaluation subset distinguishes e-bikes, scooters, wheelchairs, bicycles, and pedestrians. Performance measured by accuracy, precision, recall, and F1-score. Planned for next phase.
+
+\textbf{Trajectory Prediction Testing:} ADE and FDE are reported for linear extrapolation and Kalman filter under both direct image-coordinate estimation and homography-based world-coordinate mapping, for both Easy and Hard datasets.
+
+\textbf{Field Validation:} Full-system validation at the target roadway site will compare detected trajectories and identified risky interactions against human-reviewed observations. Scheduled for Spring quarter.
+
+%─────────────────────────────────────────────────────────────
+%  9. REALISTIC CONSTRAINTS / ENGINEERING STANDARDS
+%─────────────────────────────────────────────────────────────
+\section{Realistic Constraints / Relevant Engineering Standards}
+
+\begin{itemize}
+    \item \textbf{Data privacy and ethics:} Video surveillance raises privacy concerns; compliance with data protection regulations (e.g., GDPR and local privacy laws) is essential. Policies on storing and processing personally identifiable information must be defined.~\cite{gdpr1,gdpr2}
+
+    \item \textbf{Compute resources:} Training deep models (YOLO26, SAM 3) requires GPUs; the budget includes a Google Colab Pro+ subscription and L4/H100 GPUs. Edge deployment must account for limited processing power and energy consumption.~\cite{yolo26,sam3}
+
+    \item \textbf{Labeling effort:} Generating accurate labels through CVAT is labor-intensive; budgets and schedules must account for human annotation time.~\cite{cvat}
+
+    \item \textbf{Environmental conditions and site geometry:} The Ballard study site has unusual intersection angles and mixed trail/street interactions. Varying lighting, weather, occlusion, and camera placement can affect detection, tracking, calibration, and risk estimation.~\cite{darling,report-guide}
+
+    \item \textbf{Safety standards:} If the system influences traffic control or pedestrian alerts, relevant transportation and safety standards (e.g., MUTCD in the U.S.) may apply.~\cite{mutcd}
+
+    \item \textbf{Regulatory compliance:} Use of wireless connectivity or edge devices may require FCC certification; data storage may need IT security compliance.~\cite{fcc}
+\end{itemize}
+
+%─────────────────────────────────────────────────────────────
+%  10. PROJECT RESOURCES / BUDGET
+%─────────────────────────────────────────────────────────────
+\section{Project Resources/Budget}
+
+The currently documented Winter-quarter expenses are limited to software and cloud-computing resources used for annotation and model development.~\cite{darling,report-guide}
+
+\begin{tabular}{|p{5cm}|p{4cm}|p{5cm}|}
+\hline
+\textbf{Item} & \textbf{Cost} & \textbf{Notes} \\
+\hline
+CVAT subscription & \$35 $\times$ 2 months = \$70 & Labeling tool used by the team \\
+\hline
+Google Colab Pro+ subscription & \$55 $\times$ 1 month = \$55 & Cloud GPU for training \\
+\hline
+\textbf{Total spent (winter)} & \textbf{\$125} & \\
+\hline
+Edge device hardware & [Missing] & Planned for spring quarter \\
+\hline
+Additional sensors or cameras & [Missing] & Not specified \\
+\hline
+\end{tabular}
+
+\vspace{0.5em}
+Additional resources include access to \textbf{L4} and \textbf{H100} GPU environments. Hardware details, ownership, and associated costs are not yet fully specified and are listed as pending. Any purchase orders covered directly by the company and reimbursement details are not yet included.~\cite{report-guide}
+
+%─────────────────────────────────────────────────────────────
+%  11. INDUSTRY SPONSOR COMMENTS
+%─────────────────────────────────────────────────────────────
+\section{Industry Sponsor Comments}
+
+The team demonstrated good technical progress this quarter and successfully completed the foundational stages of the project, including dataset preparation, detection and tracking pipeline development, and camera calibration for world coordinate mapping. These efforts align well with the project objectives and provide a strong basis for the remaining work. For the next phase, the team should prioritize safety metric analysis, system validation, and the development of actionable recommendations for stakeholders.
+
+%─────────────────────────────────────────────────────────────
+%  12. REFERENCES
+%─────────────────────────────────────────────────────────────
+\section{References}
+
+\begin{thebibliography}{99}
+
+\bibitem{sam3}
+N. Carion et al., ``SAM 3: Segment anything with concepts,'' \textit{arXiv:2511.16719}, 2025.
+
+\bibitem{yolo26}
+R. Sapkota et al., ``YOLO26: key architectural enhancements and performance benchmarking for real-time object detection,'' \textit{arXiv:2509.25164}, 2025.
+
+\bibitem{gdpr1}
+European Commission, ``Principles of the GDPR,'' European Commission, accessed March 2026.
+
+\bibitem{gdpr2}
+European Commission, ``Data protection rules for business and organisations,'' European Commission, accessed March 2026.
+
+\bibitem{cvat}
+CVAT.ai Corporation, ``CVAT Documentation,'' CVAT Docs, accessed March 2026.
+
+\bibitem{darling}
+R. B. Darling, \textit{Research and Development Project Report Guide}, Rev.\ 3, Dec.\ 9, 2019.
+
+\bibitem{report-guide}
+\textit{Guidelines for Winter Quarter End Report}, course handout, accessed March 2026.
+
+\bibitem{mutcd}
+Federal Highway Administration, \textit{Manual on Uniform Traffic Control Devices for Streets and Highways (MUTCD)}, current edition, accessed March 2026.
+
+\bibitem{fcc}
+Federal Communications Commission, ``Equipment Authorization,'' FCC, accessed March 2026.
+
+\bibitem{kalman}
+R. E. Kalman, ``A New Approach to Linear Filtering and Prediction Problems,'' \textit{Journal of Basic Engineering}, vol. 82, no. 1, pp. 35--45, 1960.
+
+\bibitem{hartley}
+R. Hartley and A. Zisserman, \textit{Multiple View Geometry in Computer Vision}, 2nd ed. Cambridge University Press, 2004.
+
+\bibitem{alahi}
+A. Alahi, K. Goel, V. Ramanathan, A. Robicquet, F. Li, and S. Savarese, ``Social LSTM: Human Trajectory Prediction in Crowded Spaces,'' in \textit{Proc. IEEE CVPR}, 2016, pp. 961--971.
+
+\end{thebibliography}
+
+\end{document}

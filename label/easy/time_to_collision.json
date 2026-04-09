@@ -1,0 +1,80 @@
+[
+  {
+    "frame_idx": 3708,
+    "track_a_id": 29,
+    "track_b_id": 31,
+    "label_a": "person",
+    "label_b": "bicycle",
+    "ttc_frames": 5,
+    "collision_dist": 30.63,
+    "predictor": "linear",
+    "time_sec": 123.6,
+    "time_str": "2:03.60",
+    "ttc_sec": 0.17
+  },
+  {
+    "frame_idx": 3711,
+    "track_a_id": 29,
+    "track_b_id": 32,
+    "label_a": "person",
+    "label_b": "person",
+    "ttc_frames": 2,
+    "collision_dist": 37.73,
+    "predictor": "linear",
+    "time_sec": 123.7,
+    "time_str": "2:03.70",
+    "ttc_sec": 0.07
+  },
+  {
+    "frame_idx": 3708,
+    "track_a_id": 30,
+    "track_b_id": 31,
+    "label_a": "bicycle",
+    "label_b": "bicycle",
+    "ttc_frames": 4,
+    "collision_dist": 52.85,
+    "predictor": "linear",
+    "time_sec": 123.6,
+    "time_str": "2:03.60",
+    "ttc_sec": 0.13
+  },
+  {
+    "frame_idx": 3701,
+    "track_a_id": 30,
+    "track_b_id": 32,
+    "label_a": "bicycle",
+    "label_b": "person",
+    "ttc_frames": 10,
+    "collision_dist": 58.08,
+    "predictor": "linear",
+    "time_sec": 123.37,
+    "time_str": "2:03.37",
+    "ttc_sec": 0.33
+  },
+  {
+    "frame_idx": 3864,
+    "track_a_id": 31,
+    "track_b_id": 33,
+    "label_a": "bicycle",
+    "label_b": "car",
+    "ttc_frames": 24,
+    "collision_dist": 47.14,
+    "predictor": "linear",
+    "time_sec": 128.8,
+    "time_str": "2:08.80",
+    "ttc_sec": 0.8
+  },
+  {
+    "frame_idx": 3864,
+    "track_a_id": 32,
+    "track_b_id": 33,
+    "label_a": "person",
+    "label_b": "car",
+    "ttc_frames": 24,
+    "collision_dist": 46.14,
+    "predictor": "linear",
+    "time_sec": 128.8,
+    "time_str": "2:08.80",
+    "ttc_sec": 0.8
+  }
+]
