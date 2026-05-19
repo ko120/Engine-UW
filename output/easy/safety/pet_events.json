@@ -1,0 +1,1022 @@
+[
+  {
+    "track_a_id": 3,
+    "track_b_id": 4,
+    "label_a": "car",
+    "label_b": "cyclist",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 4,
+    "second_to_arrive": 3,
+    "conflict_x": 167.0,
+    "conflict_y": 45.5,
+    "conflict_box": [
+      163.0,
+      44.0,
+      171.0,
+      47.0
+    ],
+    "overlap_ratio": 0.2,
+    "overlap_area": 24.0,
+    "frame_event": 412,
+    "time_sec": 13.73,
+    "time_str": "0:13.73",
+    "a_interval": [
+      412,
+      412
+    ],
+    "b_interval": [
+      411,
+      411
+    ]
+  },
+  {
+    "track_a_id": 14,
+    "track_b_id": 17,
+    "label_a": "car",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 17,
+    "second_to_arrive": 14,
+    "conflict_x": 633.5,
+    "conflict_y": 108.5,
+    "conflict_box": [
+      628.0,
+      97.0,
+      639.0,
+      120.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 253.0,
+    "frame_event": 2788,
+    "time_sec": 92.93,
+    "time_str": "1:32.93",
+    "a_interval": [
+      2788,
+      2788
+    ],
+    "b_interval": [
+      2787,
+      2787
+    ]
+  },
+  {
+    "track_a_id": 15,
+    "track_b_id": 21,
+    "label_a": "person",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 21,
+    "second_to_arrive": 15,
+    "conflict_x": 83.5,
+    "conflict_y": 68.5,
+    "conflict_box": [
+      83.0,
+      64.0,
+      84.0,
+      73.0
+    ],
+    "overlap_ratio": 0.164,
+    "overlap_area": 9.0,
+    "frame_event": 2916,
+    "time_sec": 97.2,
+    "time_str": "1:37.20",
+    "a_interval": [
+      2916,
+      2916
+    ],
+    "b_interval": [
+      2915,
+      2915
+    ]
+  },
+  {
+    "track_a_id": 15,
+    "track_b_id": 22,
+    "label_a": "person",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 15,
+    "second_to_arrive": 22,
+    "conflict_x": 71.5,
+    "conflict_y": 72.0,
+    "conflict_box": [
+      70.0,
+      68.0,
+      73.0,
+      76.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 24.0,
+    "frame_event": 2999,
+    "time_sec": 99.97,
+    "time_str": "1:39.97",
+    "a_interval": [
+      2998,
+      2998
+    ],
+    "b_interval": [
+      2999,
+      2999
+    ]
+  },
+  {
+    "track_a_id": 16,
+    "track_b_id": 18,
+    "label_a": "car",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 16,
+    "second_to_arrive": 18,
+    "conflict_x": 55.0,
+    "conflict_y": 75.5,
+    "conflict_box": [
+      49.0,
+      71.0,
+      61.0,
+      80.0
+    ],
+    "overlap_ratio": 0.923,
+    "overlap_area": 108.0,
+    "frame_event": 2800,
+    "time_sec": 93.33,
+    "time_str": "1:33.33",
+    "a_interval": [
+      2799,
+      2799
+    ],
+    "b_interval": [
+      2800,
+      2800
+    ]
+  },
+  {
+    "track_a_id": 18,
+    "track_b_id": 19,
+    "label_a": "car",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 19,
+    "second_to_arrive": 18,
+    "conflict_x": 54.5,
+    "conflict_y": 76.0,
+    "conflict_box": [
+      50.0,
+      72.0,
+      59.0,
+      80.0
+    ],
+    "overlap_ratio": 0.9,
+    "overlap_area": 72.0,
+    "frame_event": 2868,
+    "time_sec": 95.6,
+    "time_str": "1:35.60",
+    "a_interval": [
+      2868,
+      2868
+    ],
+    "b_interval": [
+      2867,
+      2867
+    ]
+  },
+  {
+    "track_a_id": 24,
+    "track_b_id": 25,
+    "label_a": "person",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 24,
+    "second_to_arrive": 25,
+    "conflict_x": 16.5,
+    "conflict_y": 98.0,
+    "conflict_box": [
+      14.0,
+      88.0,
+      19.0,
+      108.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 100.0,
+    "frame_event": 3249,
+    "time_sec": 108.3,
+    "time_str": "1:48.30",
+    "a_interval": [
+      3248,
+      3248
+    ],
+    "b_interval": [
+      3249,
+      3249
+    ]
+  },
+  {
+    "track_a_id": 27,
+    "track_b_id": 29,
+    "label_a": "person",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 29,
+    "second_to_arrive": 27,
+    "conflict_x": 113.5,
+    "conflict_y": 76.5,
+    "conflict_box": [
+      111.0,
+      70.0,
+      116.0,
+      83.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 65.0,
+    "frame_event": 3566,
+    "time_sec": 118.87,
+    "time_str": "1:58.87",
+    "a_interval": [
+      3566,
+      3566
+    ],
+    "b_interval": [
+      3565,
+      3565
+    ]
+  },
+  {
+    "track_a_id": 27,
+    "track_b_id": 30,
+    "label_a": "person",
+    "label_b": "cyclist",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 27,
+    "second_to_arrive": 30,
+    "conflict_x": 144.5,
+    "conflict_y": 111.5,
+    "conflict_box": [
+      135.0,
+      92.0,
+      154.0,
+      131.0
+    ],
+    "overlap_ratio": 0.905,
+    "overlap_area": 741.0,
+    "frame_event": 3624,
+    "time_sec": 120.8,
+    "time_str": "2:00.80",
+    "a_interval": [
+      3623,
+      3623
+    ],
+    "b_interval": [
+      3624,
+      3624
+    ]
+  },
+  {
+    "track_a_id": 28,
+    "track_b_id": 29,
+    "label_a": "cyclist",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 28,
+    "second_to_arrive": 29,
+    "conflict_x": 137.5,
+    "conflict_y": 58.0,
+    "conflict_box": [
+      135.0,
+      54.0,
+      140.0,
+      62.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 40.0,
+    "frame_event": 3517,
+    "time_sec": 117.23,
+    "time_str": "1:57.23",
+    "a_interval": [
+      3516,
+      3516
+    ],
+    "b_interval": [
+      3517,
+      3517
+    ]
+  },
+  {
+    "track_a_id": 33,
+    "track_b_id": 37,
+    "label_a": "car",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 33,
+    "second_to_arrive": 37,
+    "conflict_x": 624.0,
+    "conflict_y": 97.0,
+    "conflict_box": [
+      609.0,
+      85.0,
+      639.0,
+      109.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 720.0,
+    "frame_event": 3987,
+    "time_sec": 132.9,
+    "time_str": "2:12.90",
+    "a_interval": [
+      3986,
+      3986
+    ],
+    "b_interval": [
+      3987,
+      3987
+    ]
+  },
+  {
+    "track_a_id": 33,
+    "track_b_id": 38,
+    "label_a": "car",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 1,
+    "pet_sec": 0.033,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 33,
+    "second_to_arrive": 38,
+    "conflict_x": 171.0,
+    "conflict_y": 52.5,
+    "conflict_box": [
+      159.0,
+      44.0,
+      183.0,
+      61.0
+    ],
+    "overlap_ratio": 0.96,
+    "overlap_area": 408.0,
+    "frame_event": 3996,
+    "time_sec": 133.2,
+    "time_str": "2:13.20",
+    "a_interval": [
+      3995,
+      3995
+    ],
+    "b_interval": [
+      3996,
+      3996
+    ]
+  },
+  {
+    "track_a_id": 8,
+    "track_b_id": 9,
+    "label_a": "person",
+    "label_b": "cyclist",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 3,
+    "pet_sec": 0.1,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 8,
+    "second_to_arrive": 9,
+    "conflict_x": 112.5,
+    "conflict_y": 60.0,
+    "conflict_box": [
+      112.0,
+      56.0,
+      113.0,
+      64.0
+    ],
+    "overlap_ratio": 0.333,
+    "overlap_area": 8.0,
+    "frame_event": 876,
+    "time_sec": 29.2,
+    "time_str": "0:29.20",
+    "a_interval": [
+      873,
+      873
+    ],
+    "b_interval": [
+      876,
+      876
+    ]
+  },
+  {
+    "track_a_id": 26,
+    "track_b_id": 28,
+    "label_a": "person",
+    "label_b": "cyclist",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 3,
+    "pet_sec": 0.1,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 26,
+    "second_to_arrive": 28,
+    "conflict_x": 103.5,
+    "conflict_y": 62.0,
+    "conflict_box": [
+      102.0,
+      57.0,
+      105.0,
+      67.0
+    ],
+    "overlap_ratio": 0.6,
+    "overlap_area": 30.0,
+    "frame_event": 3461,
+    "time_sec": 115.37,
+    "time_str": "1:55.37",
+    "a_interval": [
+      3458,
+      3458
+    ],
+    "b_interval": [
+      3461,
+      3461
+    ]
+  },
+  {
+    "track_a_id": 30,
+    "track_b_id": 31,
+    "label_a": "cyclist",
+    "label_b": "cyclist",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 4,
+    "pet_sec": 0.133,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 31,
+    "second_to_arrive": 30,
+    "conflict_x": 365.5,
+    "conflict_y": 129.0,
+    "conflict_box": [
+      346.0,
+      117.0,
+      385.0,
+      141.0
+    ],
+    "overlap_ratio": 0.389,
+    "overlap_area": 936.0,
+    "frame_event": 3721,
+    "time_sec": 124.03,
+    "time_str": "2:04.03",
+    "a_interval": [
+      3721,
+      3721
+    ],
+    "b_interval": [
+      3717,
+      3717
+    ]
+  },
+  {
+    "track_a_id": 3,
+    "track_b_id": 5,
+    "label_a": "car",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 12,
+    "pet_sec": 0.4,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 5,
+    "second_to_arrive": 3,
+    "conflict_x": 73.5,
+    "conflict_y": 65.5,
+    "conflict_box": [
+      73.0,
+      59.0,
+      74.0,
+      72.0
+    ],
+    "overlap_ratio": 0.181,
+    "overlap_area": 13.0,
+    "frame_event": 621,
+    "time_sec": 20.7,
+    "time_str": "0:20.70",
+    "a_interval": [
+      621,
+      621
+    ],
+    "b_interval": [
+      609,
+      609
+    ]
+  },
+  {
+    "track_a_id": 7,
+    "track_b_id": 9,
+    "label_a": "person",
+    "label_b": "cyclist",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 12,
+    "pet_sec": 0.4,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 9,
+    "second_to_arrive": 7,
+    "conflict_x": 140.0,
+    "conflict_y": 56.5,
+    "conflict_box": [
+      138.0,
+      55.0,
+      142.0,
+      58.0
+    ],
+    "overlap_ratio": 0.167,
+    "overlap_area": 12.0,
+    "frame_event": 946,
+    "time_sec": 31.53,
+    "time_str": "0:31.53",
+    "a_interval": [
+      946,
+      946
+    ],
+    "b_interval": [
+      934,
+      934
+    ]
+  },
+  {
+    "track_a_id": 16,
+    "track_b_id": 19,
+    "label_a": "car",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 37,
+    "pet_sec": 1.233,
+    "severity": "critical",
+    "is_critical": true,
+    "first_to_arrive": 16,
+    "second_to_arrive": 19,
+    "conflict_x": 54.0,
+    "conflict_y": 76.0,
+    "conflict_box": [
+      48.0,
+      72.0,
+      60.0,
+      80.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 96.0,
+    "frame_event": 2836,
+    "time_sec": 94.53,
+    "time_str": "1:34.53",
+    "a_interval": [
+      2799,
+      2799
+    ],
+    "b_interval": [
+      2836,
+      2836
+    ]
+  },
+  {
+    "track_a_id": 2,
+    "track_b_id": 5,
+    "label_a": "person",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 68,
+    "pet_sec": 2.267,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 2,
+    "second_to_arrive": 5,
+    "conflict_x": 72.0,
+    "conflict_y": 70.0,
+    "conflict_box": [
+      70.0,
+      65.0,
+      74.0,
+      75.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 40.0,
+    "frame_event": 578,
+    "time_sec": 19.27,
+    "time_str": "0:19.27",
+    "a_interval": [
+      510,
+      510
+    ],
+    "b_interval": [
+      578,
+      578
+    ]
+  },
+  {
+    "track_a_id": 31,
+    "track_b_id": 33,
+    "label_a": "cyclist",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 70,
+    "pet_sec": 2.333,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 31,
+    "second_to_arrive": 33,
+    "conflict_x": 166.0,
+    "conflict_y": 65.5,
+    "conflict_box": [
+      162.0,
+      64.0,
+      170.0,
+      67.0
+    ],
+    "overlap_ratio": 0.176,
+    "overlap_area": 24.0,
+    "frame_event": 3883,
+    "time_sec": 129.43,
+    "time_str": "2:09.43",
+    "a_interval": [
+      3813,
+      3813
+    ],
+    "b_interval": [
+      3883,
+      3883
+    ]
+  },
+  {
+    "track_a_id": 21,
+    "track_b_id": 22,
+    "label_a": "car",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 79,
+    "pet_sec": 2.633,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 21,
+    "second_to_arrive": 22,
+    "conflict_x": 73.5,
+    "conflict_y": 71.0,
+    "conflict_box": [
+      73.0,
+      68.0,
+      74.0,
+      74.0
+    ],
+    "overlap_ratio": 0.188,
+    "overlap_area": 6.0,
+    "frame_event": 2995,
+    "time_sec": 99.83,
+    "time_str": "1:39.83",
+    "a_interval": [
+      2916,
+      2916
+    ],
+    "b_interval": [
+      2995,
+      2995
+    ]
+  },
+  {
+    "track_a_id": 14,
+    "track_b_id": 15,
+    "label_a": "car",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 80,
+    "pet_sec": 2.667,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 14,
+    "second_to_arrive": 15,
+    "conflict_x": 76.5,
+    "conflict_y": 64.0,
+    "conflict_box": [
+      76.0,
+      60.0,
+      77.0,
+      68.0
+    ],
+    "overlap_ratio": 0.333,
+    "overlap_area": 8.0,
+    "frame_event": 2529,
+    "time_sec": 84.3,
+    "time_str": "1:24.30",
+    "a_interval": [
+      2449,
+      2449
+    ],
+    "b_interval": [
+      2529,
+      2529
+    ]
+  },
+  {
+    "track_a_id": 15,
+    "track_b_id": 18,
+    "label_a": "person",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 85,
+    "pet_sec": 2.833,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 18,
+    "second_to_arrive": 15,
+    "conflict_x": 72.5,
+    "conflict_y": 71.0,
+    "conflict_box": [
+      72.0,
+      67.0,
+      73.0,
+      75.0
+    ],
+    "overlap_ratio": 0.222,
+    "overlap_area": 8.0,
+    "frame_event": 2987,
+    "time_sec": 99.57,
+    "time_str": "1:39.57",
+    "a_interval": [
+      2987,
+      2987
+    ],
+    "b_interval": [
+      2902,
+      2902
+    ]
+  },
+  {
+    "track_a_id": 36,
+    "track_b_id": 38,
+    "label_a": "person",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 88,
+    "pet_sec": 2.933,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 36,
+    "second_to_arrive": 38,
+    "conflict_x": 78.5,
+    "conflict_y": 60.5,
+    "conflict_box": [
+      78.0,
+      58.0,
+      79.0,
+      63.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 5.0,
+    "frame_event": 4065,
+    "time_sec": 135.5,
+    "time_str": "2:15.50",
+    "a_interval": [
+      3977,
+      3977
+    ],
+    "b_interval": [
+      4065,
+      4065
+    ]
+  },
+  {
+    "track_a_id": 7,
+    "track_b_id": 8,
+    "label_a": "person",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 92,
+    "pet_sec": 3.067,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 8,
+    "second_to_arrive": 7,
+    "conflict_x": 112.5,
+    "conflict_y": 59.5,
+    "conflict_box": [
+      112.0,
+      56.0,
+      113.0,
+      63.0
+    ],
+    "overlap_ratio": 0.292,
+    "overlap_area": 7.0,
+    "frame_event": 965,
+    "time_sec": 32.17,
+    "time_str": "0:32.17",
+    "a_interval": [
+      965,
+      965
+    ],
+    "b_interval": [
+      873,
+      873
+    ]
+  },
+  {
+    "track_a_id": 18,
+    "track_b_id": 22,
+    "label_a": "car",
+    "label_b": "person",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 92,
+    "pet_sec": 3.067,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 18,
+    "second_to_arrive": 22,
+    "conflict_x": 71.5,
+    "conflict_y": 72.0,
+    "conflict_box": [
+      70.0,
+      68.0,
+      73.0,
+      76.0
+    ],
+    "overlap_ratio": 1.0,
+    "overlap_area": 24.0,
+    "frame_event": 2994,
+    "time_sec": 99.8,
+    "time_str": "1:39.80",
+    "a_interval": [
+      2902,
+      2902
+    ],
+    "b_interval": [
+      2994,
+      2994
+    ]
+  },
+  {
+    "track_a_id": 2,
+    "track_b_id": 3,
+    "label_a": "person",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 108,
+    "pet_sec": 3.6,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 2,
+    "second_to_arrive": 3,
+    "conflict_x": 53.5,
+    "conflict_y": 72.5,
+    "conflict_box": [
+      53.0,
+      68.0,
+      54.0,
+      77.0
+    ],
+    "overlap_ratio": 0.333,
+    "overlap_area": 9.0,
+    "frame_event": 638,
+    "time_sec": 21.27,
+    "time_str": "0:21.27",
+    "a_interval": [
+      530,
+      530
+    ],
+    "b_interval": [
+      638,
+      638
+    ]
+  },
+  {
+    "track_a_id": 37,
+    "track_b_id": 38,
+    "label_a": "car",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 125,
+    "pet_sec": 4.167,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 38,
+    "second_to_arrive": 37,
+    "conflict_x": 158.5,
+    "conflict_y": 59.0,
+    "conflict_box": [
+      150.0,
+      57.0,
+      167.0,
+      61.0
+    ],
+    "overlap_ratio": 0.152,
+    "overlap_area": 68.0,
+    "frame_event": 4140,
+    "time_sec": 138.0,
+    "time_str": "2:18.00",
+    "a_interval": [
+      4140,
+      4140
+    ],
+    "b_interval": [
+      4015,
+      4015
+    ]
+  },
+  {
+    "track_a_id": 0,
+    "track_b_id": 3,
+    "label_a": "car",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 138,
+    "pet_sec": 4.6,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 0,
+    "second_to_arrive": 3,
+    "conflict_x": 166.5,
+    "conflict_y": 42.5,
+    "conflict_box": [
+      164.0,
+      40.0,
+      169.0,
+      45.0
+    ],
+    "overlap_ratio": 0.152,
+    "overlap_area": 25.0,
+    "frame_event": 308,
+    "time_sec": 10.27,
+    "time_str": "0:10.27",
+    "a_interval": [
+      170,
+      170
+    ],
+    "b_interval": [
+      308,
+      308
+    ]
+  },
+  {
+    "track_a_id": 30,
+    "track_b_id": 33,
+    "label_a": "cyclist",
+    "label_b": "car",
+    "pet_method": "bbox_footprint",
+    "pet_frames": 141,
+    "pet_sec": 4.7,
+    "severity": "interaction",
+    "is_critical": false,
+    "first_to_arrive": 30,
+    "second_to_arrive": 33,
+    "conflict_x": 316.0,
+    "conflict_y": 107.0,
+    "conflict_box": [
+      292.0,
+      102.0,
+      340.0,
+      112.0
+    ],
+    "overlap_ratio": 0.161,
+    "overlap_area": 480.0,
+    "frame_event": 3836,
+    "time_sec": 127.87,
+    "time_str": "2:07.87",
+    "a_interval": [
+      3695,
+      3695
+    ],
+    "b_interval": [
+      3836,
+      3836
+    ]
+  }
+]

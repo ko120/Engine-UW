@@ -1,87 +1,106 @@
 # engineVideo
 
-Video analytics pipeline for detecting, tracking, and predicting trajectories of road users (person, bicycle, car, truck) in traffic footage.
+Video analytics pipeline for road-user safety analysis: detection, tracking,
+trajectory prediction, and post-encroachment-time (PET) / time-to-collision
+(TTC) metrics on traffic footage.
 
-## Pipeline Overview
+## Pipeline
 
 ```
-Video ──► YOLO detect/track ──► SAM3 gap-fill ──► pseudo-labels (JSON)
-                                                        │
-                              CVAT XML ground-truth ────┤
-                                                        │
-                                                   eval_metrics.py
-                                                   traj_predict_from_cvat.py
+Video ──► YOLO / SAM3 tracking ──► tracker JSON
+                                          │
+              CVAT XML ground truth ──────┤
+                                          ▼
+                          traj_predict_from_cvat.py   (linear + Kalman)
+                          transformer_trajectory.py   (Transformer)
+                                          │
+                                          ▼
+                      safety_analytics.py   (PET + heatmaps + report)
+                                          │
+                                          ▼
+                  visualize_traj_predictions.py   (annotated video)
+                  make_pet_clips.py               (one MP4 per PET event)
 ```
-
-## Scripts
-
-| Script | Purpose |
-|--------|---------|
-| `yolo.py` | YOLO detect or track a video; outputs JSON |
-| `sam3.py` | SAM3 text-prompted tracking; outputs JSON |
-| `yolo_sam2_tracker.py` | Combined YOLO BoT-SORT + SAM3 occlusion-filling pipeline |
-| `eval_model.py` | Evaluate YOLO model vs CVAT XML (Precision/Recall/F1/AP50/MOTA) |
-| `eval_metrics.py` | Compare tracker JSON output vs CVAT XML ground truth |
-| `compare_trackers.py` | Side-by-side comparison of multiple tracker outputs |
-| `traj_predict_from_cvat.py` | Linear + Kalman trajectory prediction from CVAT annotations |
-| `visualize_traj_predictions.py` | Render predicted trajectories onto video |
-| `annotate_video.py` | Draw bounding boxes + trajectory overlays on video |
-| `draw_bbx.py` | Draw bounding boxes from JSON onto video frames |
-| `converter.py` | Convert between annotation formats |
-| `yolo_train_hparam_tune.py` | Hyperparameter search for YOLO fine-tuning |
-
-## Shell Scripts
-
-| Script | Purpose |
-|--------|---------|
-| `run_sam3_easy.sh` | Run YOLO + SAM3 on easy-split video |
-| `run_sam3_hard.sh` | Run YOLO + SAM3 on hard-split video |
-| `run_hparam_tune.sh` | Launch YOLO hyperparameter tuning |
-| `eval.sh` | Evaluate all tracker variants vs ground truth |
-| `annot_video.sh` | Render trajectory predictions onto video |
 
 ## Install
 
 ```bash
-pip install -U ultralytics opencv-python numpy scipy tqdm
+pip install -r requirements.txt
 ```
 
-## Quick Start
+`ultralytics` brings in `torch`; install the CUDA build separately if you
+need GPU.
 
-**Track a video (YOLO only):**
+## Quickstart — easy split
+
+The repo ships small ground-truth annotations and example safety-analytics
+outputs for the easy split (`label/easy/`, `output/easy/safety/`). The
+source MP4 is not included — supply your own and point `VIDEO` at it:
+
 ```bash
-python yolo.py --mode track --source input.mp4 --model best.pt --out-path output.json
+export VIDEO=/path/to/your/easy.mp4
+./scripts/run_easy.sh                # linear + Kalman + TTC overlay
+./scripts/run_transformer_easy.sh    # PET + safety analytics + annotated video
+PRED_XML=output/easy/predictions_with_transformer.xml ./scripts/run_pet_clips_easy.sh
+./scripts/eval.sh                    # eval bundled tracker JSONs vs ground truth
 ```
 
-**Track with SAM3 gap-filling:**
-```bash
-python sam3.py --source input.mp4 --model sam3.pt --out-path result/ --text person bicycle car truck
+All shell scripts read paths from environment variables — they have no
+hardcoded user-specific paths. See the comment at the top of each script
+for the required variables. Override the interpreter with `PYTHON=...`
+(default `python3`).
+
+## Python entry points
+
+| File | Purpose |
+|------|---------|
+| `yolo.py` | YOLO detect or track a video; outputs tracker JSON |
+| `sam3.py` | SAM3 text-prompted tracking; outputs tracker JSON |
+| `yolo_sam2_tracker.py` | YOLO BoT-SORT + SAM3 occlusion-filling pipeline |
+| `eval_model.py` | Evaluate a YOLO model vs CVAT XML (P/R/F1/AP50/MOTA) |
+| `eval_metrics.py` | Compare tracker JSON vs CVAT XML (HOTA, mAP50, gaps) |
+| `compare_trackers.py` | Side-by-side comparison of tracker outputs |
+| `traj_predict_from_cvat.py` | Linear + Kalman trajectory prediction from CVAT |
+| `transformer_trajectory.py` | Transformer trajectory predictor (train + eval) |
+| `safety_analytics.py` | PET + occupancy/conflict heatmaps + text report |
+| `visualize_traj_predictions.py` | Render predictions onto video |
+| `make_pet_clips.py` | Render a short MP4 per PET event |
+| `annotate_video.py` | Bounding-box + trajectory overlay |
+| `draw_bbx.py` | Bounding-box-only overlay |
+| `converter.py` | Convert YOLO JSON ↔ CVAT XML |
+| `yolo_train_hparam_tune.py` | YOLO fine-tuning random-search HP loop |
+| `pet/pet_ttc.py` | Standalone PET/TTC reference implementation |
+
+Each script prints `--help`; refer to its module docstring for full usage.
+
+## Shell scripts and required env vars
+
+| Script | Required env vars |
+|--------|-------------------|
+| `scripts/run_easy.sh`, `scripts/annot_video.sh` | `VIDEO` |
+| `scripts/run_transformer_easy.sh` | `VIDEO` |
+| `scripts/run_pet_clips_easy.sh` | `VIDEO`, `PRED_XML` |
+| `scripts/run_hard.sh` | `VIDEO`, `ANNOT_XML` |
+| `scripts/run_cali_20.sh` | `VIDEO`, `ANNOT_XML` |
+| `scripts/run_sam3_easy.sh`, `scripts/run_sam3_hard.sh` | `VIDEO`, `YOLO_MODEL`, `SAM3_MODEL` |
+| `scripts/run_hparam_tune.sh` | `VIDEO`, `GT_XML` |
+| `scripts/eval.sh` | none — uses bundled `result/easy/*` + `label/easy/annotations_easy.xml` |
+
+## Repo layout
+
+```
+*.py                 # Python entry points (cross-import, all at root)
+scripts/             # Shell driver scripts (run_*.sh, eval.sh, annot_video.sh)
+pet/                 # Standalone PET/TTC reference module + demo
+label/easy/          # CVAT ground truth + derived predictions/TTC (committed)
+output/easy/safety/  # Example PET + heatmap outputs (committed)
+result/easy/         # Example tracker JSONs used by eval.sh (committed)
+result/hard/         # Example tracker JSONs for the hard split (committed)
+models/              # gitignored — produced by training
+output/easy/*.mp4    # gitignored — produced by run_*.sh
+label/Cali/, label/Cali_raw/, label/hard/, output/cali_20/, output/hard/
+                     # gitignored — large data, not bundled
 ```
 
-**Evaluate vs ground truth:**
-```bash
-python eval_metrics.py --pred result/output_sam3.json --gt annotations.xml
-```
-
-**Trajectory prediction:**
-```bash
-python traj_predict_from_cvat.py --input annotations.xml --output predictions.xml --horizon 30 --lookback 10
-```
-
-**Visualize predictions:**
-```bash
-python visualize_traj_predictions.py --video input.mp4 --xml predictions.xml --output annotated.mp4
-```
-
-**Fine-tune YOLO with hyperparameter search:**
-```bash
-python yolo_train_hparam_tune.py --video input.mp4 --gt annotations.xml --base-model yolo26l.pt
-```
-
-## Metrics
-
-`eval_model.py` / `eval_metrics.py` report:
-- Per-class: Precision, Recall, F1, AP50
-- Overall: mAP50, mAP50-95, MOTA, ID Switches
-
-`traj_predict_from_cvat.py` reports per-track and dataset-wide ADE / FDE for linear and Kalman predictors.
+Trained checkpoints, source videos, rendered MP4s, and frame dumps are
+gitignored — regenerate them locally from the scripts above.

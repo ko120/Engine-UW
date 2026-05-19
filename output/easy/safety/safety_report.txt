@@ -1,0 +1,47 @@
+Safety / Conflict Analytics Report
+========================================
+
+Scene size       : 640 x 360
+Total frames     : 4500
+FPS              : 30.0
+PET method       : footprint
+PET interaction  : <= 5.0 s
+PET critical     : <= 1.5 s
+PET min overlap  : 0.150 of smaller bbox
+
+TTC events       : 2
+  TTC sec  min/median/max : 0.13 / 0.47 / 0.80
+  TTC sec  mean/p25/p75   : 0.47 / 0.30 / 0.63
+
+PET events       : 30 (18 critical)
+  PET sec  min/median/max : 0.03 / 0.27 / 4.70
+  PET sec  mean/p25/p75   : 1.39 / 0.03 / 2.79
+
+Conflict counts by class pair:
+  car <-> car                      8
+  person <-> person                5
+  person <-> car                   4
+  person <-> cyclist               4
+  car <-> person                   4
+  cyclist <-> car                  3
+  cyclist <-> cyclist              2
+  car <-> cyclist                  1
+  cyclist <-> person               1
+
+Top 2 most severe TTC events:
+   frame      time  pair                       ttc(s)
+    3708   2:03.60  cyclist <-> cyclist          0.13
+    3864   2:08.80  cyclist <-> car              0.80
+
+Top 10 most severe PET events:
+   frame      time  pair                       pet(s)     severity
+     412   0:13.73  car <-> cyclist              0.03     critical
+    2788   1:32.93  car <-> car                  0.03     critical
+    2916   1:37.20  person <-> car               0.03     critical
+    2999   1:39.97  person <-> person            0.03     critical
+    2800   1:33.33  car <-> car                  0.03     critical
+    2868   1:35.60  car <-> car                  0.03     critical
+    3249   1:48.30  person <-> person            0.03     critical
+    3566   1:58.87  person <-> person            0.03     critical
+    3624   2:00.80  person <-> cyclist           0.03     critical
+    3517   1:57.23  cyclist <-> person           0.03     critical

@@ -344,6 +344,168 @@ def compute_metrics(tracks, horizon, lookback, kalman_process_var=1.0, kalman_me
     return per_track, overall
 
 
+# ── cyclist-agent grouping ───────────────────────────────────────────────────
+
+def _rider_score(person_box, bike_box):
+    """
+    Score in [0, 1] for how likely `person_box` represents the rider of
+    `bike_box` in a given frame.  Takes the max of two forgiving signals
+    so tall/narrow rider bboxes don't fail an IoU-only test:
+
+      • overlap_frac = intersection / min(area_p, area_b)
+      • proximity    = 1 - d(centers) / (bike_diag + person_diag),
+                       measured against an upward-extended "rider zone"
+                       (bike y-range extended up by one bike height,
+                       since the rider sits above the frame)
+    """
+    px1, py1, px2, py2 = person_box
+    bx1, by1, bx2, by2 = bike_box
+
+    iw = max(0.0, min(px2, bx2) - max(px1, bx1))
+    ih = max(0.0, min(py2, by2) - max(py1, by1))
+    inter = iw * ih
+    area_p = max(1e-6, (px2 - px1) * (py2 - py1))
+    area_b = max(1e-6, (bx2 - bx1) * (by2 - by1))
+    overlap = inter / min(area_p, area_b) if inter > 0.0 else 0.0
+
+    bike_w = max(1.0, bx2 - bx1)
+    bike_h = max(1.0, by2 - by1)
+    person_w = max(1.0, px2 - px1)
+    person_h = max(1.0, py2 - py1)
+
+    # Anchor against the rider zone: bike x-centre, y-centre shifted up
+    # by bike_h/2 (so the rider's torso sits near the zone's centre).
+    bcx = (bx1 + bx2) / 2.0
+    bcy_zone = (by1 + by2) / 2.0 - bike_h / 2.0
+    pcx = (px1 + px2) / 2.0
+    pcy = (py1 + py2) / 2.0
+
+    dx = (pcx - bcx) / bike_w
+    dy = (pcy - bcy_zone) / (bike_h + person_h)
+    dist = (dx * dx + dy * dy) ** 0.5
+    proximity = max(0.0, 1.0 - dist)
+
+    return max(overlap, proximity)
+
+
+def _box_overlap_frac(a, b):
+    """Legacy helper — kept for callers that only need raw IoU-like overlap."""
+    return _rider_score(a, b)
+
+
+def group_cyclist_agents(tracks,
+                         score_thresh=0.25,
+                         frac_thresh=0.4,
+                         min_common_frames=3,
+                         verbose=True):
+    """
+    Fuse each rider (person) with their bicycle into a single 'cyclist' agent
+    when their boxes score as co-located across shared frames.
+
+    Each cyclist reuses the bicycle's track id as the agent id and carries a
+    per-frame union bbox, so downstream TTC sees one agent per rider-bike
+    pair instead of two tracks that produce duplicate near-miss events.
+    Unbound tracks pass through unchanged.
+    """
+    per_track = {t["id"]: t for t in tracks}
+    frames_by_tid = {
+        tid: {f[0]: (f[1], f[2], f[3], f[4]) for f in t["frames"]}
+        for tid, t in per_track.items()
+    }
+
+    persons = [tid for tid, t in per_track.items() if t["label"] == "person"]
+    bicycles = [tid for tid, t in per_track.items() if t["label"] == "bicycle"]
+
+    per_bike_best = {bid: None for bid in bicycles}
+
+    candidates = []
+    for pid in persons:
+        pf = frames_by_tid[pid]
+        for bid in bicycles:
+            bf = frames_by_tid[bid]
+            common = pf.keys() & bf.keys()
+            if len(common) < min_common_frames:
+                continue
+            scores = [_rider_score(pf[f], bf[f]) for f in common]
+            hits = sum(1 for s in scores if s >= score_thresh)
+            frac = hits / len(common)
+            mean_score = sum(scores) / len(scores)
+            best = per_bike_best.get(bid)
+            if best is None or frac > best[0]:
+                per_bike_best[bid] = (frac, mean_score, len(common), pid)
+            if frac >= frac_thresh:
+                candidates.append((frac, len(common), pid, bid))
+
+    # Greedy best-frac matching — each BIKE used once, a person may bind to
+    # multiple bikes (covers CVAT track fragmentation where the same rider
+    # spans several bike tracks).
+    candidates.sort(key=lambda x: (-x[0], -x[1]))
+    used_p, used_b, bindings = set(), set(), []
+    for frac, _, pid, bid in candidates:
+        if bid in used_b:
+            continue
+        used_p.add(pid)
+        used_b.add(bid)
+        bindings.append((pid, bid))
+
+    # For each bound person, collect the frames covered by its bound bikes
+    # so the standalone person track only keeps the uncovered frames.
+    person_bike_frames = {pid: set() for pid in used_p}
+    for pid, bid in bindings:
+        person_bike_frames[pid].update(frames_by_tid[bid].keys())
+
+    agent_tracks = []
+    for pid, bid in bindings:
+        pf = frames_by_tid[pid]
+        bf = frames_by_tid[bid]
+        frames = []
+        for f in sorted(bf.keys()):
+            boxes = [bf[f]]
+            if f in pf:
+                boxes.append(pf[f])
+            x1 = min(b[0] for b in boxes)
+            y1 = min(b[1] for b in boxes)
+            x2 = max(b[2] for b in boxes)
+            y2 = max(b[3] for b in boxes)
+            frames.append((f, x1, y1, x2, y2))
+        agent_tracks.append({
+            "id": bid,
+            "label": "cyclist",
+            "frames": frames,
+            "member_ids": [pid, bid],
+        })
+
+    for tid, t in per_track.items():
+        if tid in used_b:
+            continue
+        if tid in used_p:
+            # Keep only the person's frames not already owned by a cyclist agent.
+            kept = [row for row in t["frames"] if row[0] not in person_bike_frames[tid]]
+            if not kept:
+                continue
+            agent_tracks.append({**t, "frames": kept, "member_ids": [tid]})
+            continue
+        agent_tracks.append({**t, "member_ids": [tid]})
+
+    if verbose:
+        print(f"  score_thresh={score_thresh}  frac_thresh={frac_thresh}  "
+              f"min_common_frames={min_common_frames}")
+        print(f"  per-bicycle best rider match (pass ? = frac >= {frac_thresh}):")
+        for bid in sorted(bicycles):
+            best = per_bike_best.get(bid)
+            if best is None:
+                print(f"    bike {bid:>3}: no person track shares "
+                      f">= {min_common_frames} frames")
+                continue
+            frac, mean_score, n, pid = best
+            passed = "PASS" if bid in used_b else "fail"
+            print(f"    bike {bid:>3}: best person {pid:>3}  "
+                  f"frac={frac:.2f}  mean_score={mean_score:.2f}  "
+                  f"shared_frames={n}  -> {passed}")
+
+    return agent_tracks
+
+
 # ── time-to-collision ────────────────────────────────────────────────────────
 
 def compute_time_to_collision(tracks, horizon, lookback,
@@ -513,17 +675,25 @@ def compute_time_to_collision(tracks, horizon, lookback,
 
 def build_output_xml(meta, tracks, horizon, lookback, poly_stride,
                      kalman_process_var=1.0, kalman_meas_var=4.0,
-                     box_threshold=0.5):
+                     box_threshold=0.5, agent_tracks=None,
+                     transformer_predict_fn=None):
     """
-    Produces a CVAT-compatible XML with four track layers per object:
-      • bbox track
-      • lin_pred_<label>
-      • kalman_pred_<label>
-      • gt_<label>
+    Produces a CVAT-compatible XML with up to five track layers per object:
+      • bbox track (from raw tracks)
+      • lin_pred_<label> / kalman_pred_<label> / gt_<label>
+        (from agent_tracks when provided — so a rider+bike cyclist agent
+        emits a single merged trajectory instead of two overlapping ones)
+      • transformer_pred_<label> (only when `transformer_predict_fn` is given;
+        takes a (history, horizon) -> list[(x, y)] callable so this file
+        stays free of the deep-learning dependency)
     """
     now = datetime.now(timezone.utc).isoformat()
 
+    if agent_tracks is None:
+        agent_tracks = tracks
+
     orig_labels = sorted({t["label"] for t in tracks})
+    pred_labels = sorted({t["label"] for t in agent_tracks})
     lc = meta["label_colors"]
 
     root = Element("annotations")
@@ -552,26 +722,34 @@ def build_output_xml(meta, tracks, horizon, lookback, poly_stride,
         SubElement(lbl, "type").text = "any"
         SubElement(lbl, "attributes")
 
-    for lname in orig_labels:
+    for lname in pred_labels:
         lbl = SubElement(labels_el, "label")
         SubElement(lbl, "name").text = f"lin_pred_{lname}"
         SubElement(lbl, "color").text = "#ff4444"   # red
         SubElement(lbl, "type").text = "any"
         SubElement(lbl, "attributes")
 
-    for lname in orig_labels:
+    for lname in pred_labels:
         lbl = SubElement(labels_el, "label")
         SubElement(lbl, "name").text = f"kalman_pred_{lname}"
         SubElement(lbl, "color").text = "#4444ff"   # blue
         SubElement(lbl, "type").text = "any"
         SubElement(lbl, "attributes")
 
-    for lname in orig_labels:
+    for lname in pred_labels:
         lbl = SubElement(labels_el, "label")
         SubElement(lbl, "name").text = f"gt_{lname}"
         SubElement(lbl, "color").text = "#44ff44"   # green
         SubElement(lbl, "type").text = "any"
         SubElement(lbl, "attributes")
+
+    if transformer_predict_fn is not None:
+        for lname in pred_labels:
+            lbl = SubElement(labels_el, "label")
+            SubElement(lbl, "name").text = f"transformer_pred_{lname}"
+            SubElement(lbl, "color").text = "#ff44dd"   # magenta
+            SubElement(lbl, "type").text = "any"
+            SubElement(lbl, "attributes")
 
     segs = SubElement(job_el, "segments")
     seg = SubElement(segs, "segment")
@@ -587,13 +765,12 @@ def build_output_xml(meta, tracks, horizon, lookback, poly_stride,
 
     cvat_id = 0
 
+    # ── (1) Bbox layer — one track per original detection ─────────────────
     for track in tracks:
         label = track["label"]
-        fc = frame_to_center(track)
-        fidxs = sorted(fc.keys())
+        fidxs = sorted(f[0] for f in track["frames"])
         last_f = fidxs[-1]
 
-        # (1) original bbox track
         bbox_el = SubElement(root, "track",
                              id=str(cvat_id), orig_id=str(track["id"]),
                              label=label, source="file", z_order="0")
@@ -626,11 +803,19 @@ def build_output_xml(meta, tracks, horizon, lookback, poly_stride,
                 z_order="0"
             )
 
+    # ── (2-4) Prediction + GT polylines — one set per agent ──────────────
+    for agent in agent_tracks:
+        label = agent["label"]
+        fc = frame_to_center(agent)
+        fidxs = sorted(fc.keys())
+        last_f = fidxs[-1]
+        agent_orig_id = str(agent["id"])
+
         def write_poly_track(elem_label, pts_fn, z_order):
             nonlocal cvat_id
             el = SubElement(
                 root, "track",
-                id=str(cvat_id), label=elem_label,
+                id=str(cvat_id), orig_id=agent_orig_id, label=elem_label,
                 source="auto", z_order=str(z_order)
             )
             cvat_id += 1
@@ -690,6 +875,15 @@ def build_output_xml(meta, tracks, horizon, lookback, poly_stride,
 
         write_poly_track(f"gt_{label}", gt_pts, z_order=3)
 
+        # (5) transformer prediction (optional)
+        if transformer_predict_fn is not None:
+            def transformer_pred_pts(i, t):
+                past = fidxs[max(0, i - lookback + 1): i + 1]
+                history = [fc[f] for f in past]
+                return transformer_predict_fn(history, horizon)
+
+            write_poly_track(f"transformer_pred_{label}", transformer_pred_pts, z_order=4)
+
     return root
 
 
@@ -729,6 +923,12 @@ def main():
                     help="TTC: evaluate every N frames (default: 5)")
     ap.add_argument("--ttc-merge-window", type=int, default=30,
                     help="TTC: merge same-pair events within N frames (default: 30)")
+    ap.add_argument("--cyclist-score-thresh", type=float, default=0.25,
+                    help="Cyclist grouping: per-frame rider score threshold (default: 0.25)")
+    ap.add_argument("--cyclist-frac-thresh", type=float, default=0.4,
+                    help="Cyclist grouping: min fraction of shared frames above score (default: 0.4)")
+    ap.add_argument("--cyclist-min-common", type=int, default=3,
+                    help="Cyclist grouping: min shared frames between person and bike (default: 3)")
     args = ap.parse_args()
 
     if args.output is None:
@@ -780,8 +980,18 @@ def main():
         f"(predictor={args.ttc_predictor}, margin={args.ttc_margin}px, "
         f"stride={args.ttc_stride}) ..."
     )
+    agent_tracks = group_cyclist_agents(
+        tracks,
+        score_thresh=args.cyclist_score_thresh,
+        frac_thresh=args.cyclist_frac_thresh,
+        min_common_frames=args.cyclist_min_common,
+    )
+    n_cyclists = sum(1 for t in agent_tracks if t.get("label") == "cyclist")
+    print(f"  grouped into {len(agent_tracks)} agents ({n_cyclists} cyclists)")
+    agent_members = {t["id"]: t.get("member_ids", [t["id"]]) for t in agent_tracks}
+
     ttc_events = compute_time_to_collision(
-        tracks, args.horizon, args.lookback,
+        agent_tracks, args.horizon, args.lookback,
         collision_margin=args.ttc_margin,
         predictor=args.ttc_predictor,
         kalman_process_var=args.kalman_process_var,
@@ -796,6 +1006,8 @@ def main():
         e["time_sec"] = round(t_sec, 2)
         e["time_str"] = f"{int(t_sec // 60)}:{t_sec % 60:05.2f}"
         e["ttc_sec"] = round(e["ttc_frames"] / fps, 2)
+        e["members_a"] = agent_members.get(e["track_a_id"], [e["track_a_id"]])
+        e["members_b"] = agent_members.get(e["track_b_id"], [e["track_b_id"]])
 
     if ttc_events:
         print(
@@ -828,6 +1040,7 @@ def main():
             kalman_process_var=args.kalman_process_var,
             kalman_meas_var=args.kalman_meas_var,
             box_threshold=args.box_threshold,
+            agent_tracks=agent_tracks,
         )
 
         raw = tostring(xml_root, encoding="unicode")
